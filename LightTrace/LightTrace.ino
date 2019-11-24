@@ -1,18 +1,19 @@
 #define leftAnalog A0
-#define rightAnalog 15
+#define rightAnalog A1
+#define servo_xy_control 9
+#define servo_z_control 10
 #include <Servo.h>
 
 int leftvalue=0,rightvalue=0;
-Servo leftservo;
+Servo servo_xy,servo_z;
 int pos = 1;
 
 void setup() {
   // put your setup code here, to run once:
-  /*left analog input pin of photoresistor*/
   pinMode(leftAnalog,INPUT);
-  /*right analog input pin of photoresistor*/
   pinMode(rightAnalog,INPUT);
-  leftservo.attach(9);
+  servo_xy.attach(servo_xy_control);
+  servo_z.attach(servo_z_control);
   Serial.begin(115200);
 }
 
@@ -27,18 +28,37 @@ void loop() {
   Serial.print(" ");
   Serial.print(pos);
   Serial.print("\n");
-  for(pos = 1;pos<180;pos++)
+
+  int compare = leftvalue-rightvalue;
+  if(compare>10)
   {
-  leftservo.write(pos);
-  //Serial.print(pos);
-  delay(100);
-  }
-  delay(100);
-  for(pos = 180;pos>0;pos--)
+    pos++;
+    if(pos>=180)
+    {
+      pos = 180;
+    }
+    servo_xy.write(pos);
+  }else if(compare<0)
   {
-  leftservo.write(pos);
-  //Serial.print(pos);
-  delay(100);
+    pos--;
+    if(pos<0)
+    {
+      pos = 0;
+    }
+    servo_xy.write(pos);
   }
-  delay(100);
+  delay(300);
+
+
+
+
+
+
+
+
+
+
+
+
+  
 }
