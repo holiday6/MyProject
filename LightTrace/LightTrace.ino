@@ -8,9 +8,11 @@
 
 int leftvalue=0,rightvalue=0;
 Servo servo_xy,servo_z;
-int pos_xy = 1,pos_z = 1;
-int band_xy = 10,band_z = 10;
+int pos_xy = 0,pos_z = 0;
+int band_xy = 40,band_z = 40;
 int tlv=0,trv=0,blv=0,brv=0;
+int c_xy=0,c_z=0;
+int pre_z=pos_z;
 void setup() {
   // put your setup code here, to run once:
   pinMode(topAnalog_left,INPUT);
@@ -20,6 +22,7 @@ void setup() {
   servo_xy.attach(servo_xy_control);
   servo_z.attach(servo_z_control);
   Serial.begin(115200);
+  
 }
 
 void loop() {
@@ -30,7 +33,6 @@ void loop() {
   brv = analogRead(botAnalog_right);
   Serial.print(tlv);
   Serial.print(" ");
-  trv = trv+27;
   Serial.print(trv);
   Serial.print("\n");
   Serial.print(blv);
@@ -38,48 +40,76 @@ void loop() {
   Serial.print(brv);
   Serial.print("\n");
   
-
-  if(abs(tlv+blv-trv-brv-27)>band_xy)
+  
+  if(abs(tlv+blv-trv-brv)>band_xy)
   {
+    if(pos_z<=90)
+    {
     if(tlv+blv>trv+brv)
+    {
+      pos_xy--;
+      if(pos_xy<0)
+      {
+        pos_xy=0;
+        
+      }
+    }else{
+      pos_xy++;
+      if(pos_xy>180)
+      {
+        pos_xy=180;
+        
+      }
+    }
+    }else{
+      if(tlv+blv>trv+brv)
     {
       pos_xy++;
       if(pos_xy>180)
       {
         pos_xy=180;
+        
       }
     }else{
       pos_xy--;
       if(pos_xy<0)
       {
         pos_xy=0;
+        
       }
     }
-    servo_xy.write(pos_xy);
+    }
   }
-  if(abs(tlv+trv-blv-brv-27)>band_z)
+  if(abs(tlv+trv-blv-brv)>band_z)
   {
+    pre_z=pos_z;
     if(tlv+trv>blv+brv)
     {
       pos_z++;
       if(pos_z>180)
       {
         pos_z=180;
+        
       }
     }else{
       pos_z--;
       if(pos_z<0)
       {
         pos_z=0;
+        
       }
     }
-    servo_xy.write(pos_z);
+    
   }
+  
+  servo_xy.write(pos_xy);
+  servo_z.write(pos_z);
+  
   Serial.print(pos_xy);
   Serial.print(" ");
   Serial.print(pos_z);
   Serial.print("\n");
-  delay(500);
+  delay(150);
 
 
 
